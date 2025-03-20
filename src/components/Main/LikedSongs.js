@@ -47,13 +47,13 @@ function LikedSongs() {
   return (
     <div className=" mt-2 p-3 bg-dark rounded">
       <div className="rounded-3 navbar_before p-2">
-        <h1 className="fs-1 m-2">Liked Songs</h1>
+        <h1 className="fs-5 m-2">Liked Songs</h1>
         {likedTracks.length > 0 ? (
           <div
             className="overflow-auto rounded"
             style={{ maxHeight: "53vh" }} // Ensures scrolling works
           >
-            <ul className="list-group rounded h-75">
+            <ul className="list-group rounded h-75  mt-2">
               {likedTracks.map((track) => (
                 <li
                   key={track.id}

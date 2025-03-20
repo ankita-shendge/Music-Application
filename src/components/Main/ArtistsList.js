@@ -48,7 +48,7 @@ function ArtistsList() {
   }, [token]);
 
   // Function to fetch top tracks for the selected artist
-  const fetchArtistTracks = async (artistId, artistName) => {
+  const fetchArtistTracks = async (artistId, artistName, artistImage) => {
     try {
       const response = await fetch(
         `https://api.spotify.com/v1/artists/${artistId}/top-tracks?market=US`,
@@ -65,7 +65,7 @@ function ArtistsList() {
 
       const data = await response.json();
       setArtistTracks(data.tracks); // Set the top tracks
-      setSelectedArtist(artistName); // Set the selected artist name
+      setSelectedArtist({ name: artistName, image: artistImage, id: artistId });
     } catch (error) {
       console.error("Error fetching top tracks:", error);
     }
@@ -75,42 +75,66 @@ function ArtistsList() {
     <>
       <div className="d-flex flex-row justify-content-between gap-2">
         <div className="mt-2 rounded-3 bg-dark flex-grow-1 w-50">
-          <div className="rounded-3 navbar_before p-3">
-            <h1 className="fs-5 m-2">Artists</h1>
-            <div className="d-flex mt-3 flex-wrap justify-content-space-evenly">
-              {artists.length > 0 ? (
-                artists.map((artist) => (
-                  <div
-                    key={artist.id}
-                    className="card-body m-1 rounded text-light d-flex flex-column align-items-center bg-secondary p-1 w-15"
-                    onClick={() => fetchArtistTracks(artist.id, artist.name)}
-                    style={{ cursor: "pointer" }}
-                  >
-                    <img
-                      className="rounded p-1 img-fluid artist-image rounded-3"
-                      src={artist.images[0].url}
-                      alt={artist.name}
-                      width="150"
-                    />
-                    <h5 className="mt-2">{artist.name}</h5>
-                    <h6>Artists</h6>
-                  </div>
-                ))
-              ) : (
-                <p>Loading artist data...</p>
-              )}
+          <div
+            className="overflow-auto rounded"
+            style={{ maxHeight: "65vh" }} // Ensures scrolling works
+          >
+            <div className="rounded-3 navbar_before p-3">
+              <h1 className="fs-5 m-2">Artists</h1>
+              <div className="d-flex mt-3 flex-wrap justify-content-space-evenly ">
+                {artists.length > 0 ? (
+                  artists.map((artist) => (
+                    <div
+                      key={artist.id}
+                      className="card-body m-1 rounded text-light d-flex flex-column align-items-center bg-secondary p-1 w-15"
+                      onClick={() =>
+                        fetchArtistTracks(
+                          artist.id,
+                          artist.name,
+                          artist.images[0]?.url
+                        )
+                      }
+                      style={{ cursor: "pointer" }}
+                    >
+                      <img
+                        className="rounded p-1 img-fluid artist-image rounded-3"
+                        src={artist.images[0].url}
+                        alt={artist.name}
+                        width="150"
+                      />
+                      <h5 className="mt-2">{artist.name}</h5>
+                      <h6>Artists</h6>
+                    </div>
+                  ))
+                ) : (
+                  <p>Loading artist data...</p>
+                )}
+              </div>
             </div>
           </div>
         </div>
 
         {selectedArtist && (
-          <div className="mt-2 p-3 bg-dark rounded flex-grow-2 w-50">
-            <h3 className="text-light p-2 fs-6">
-              Top tracks of {selectedArtist}
-            </h3>
+          <div className="mt-2 p-1 bg-secondary rounded flex-grow-2 w-50 p-2">
             <div
-              className="overflow-auto rounded"
-              style={{ maxHeight: "53vh" }} // Ensures scrolling works
+              className="d-flex position-relative rounded"
+              style={{
+                backgroundImage: `url(${selectedArtist.image})`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                width: "100%",
+                height: "200px",
+                objectFit: "cover",
+              }}
+            >
+              <h3 className="text-light p-1 fs-2 position-absolute bottom-0 start-0 w-100 fw-bold">
+                Tracks for{" "}
+                <span className="fw-italic">{selectedArtist.name}</span>
+              </h3>
+            </div>
+            <div
+              className="overflow-auto rounded mt-2"
+              style={{ maxHeight: "40vh" }} // Ensures scrolling works
             >
               <ul className="list-group">
                 {artistTracks.length > 0 ? (
