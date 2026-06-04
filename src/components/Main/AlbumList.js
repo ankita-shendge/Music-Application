@@ -1,8 +1,9 @@
 import React, { useContext, useEffect, useState } from "react";
-import { FaRegPlayCircle } from "react-icons/fa";
 
 import { TrackContext } from "../TrackContext";
 import { redirectUri } from "../Authentication/sportify";
+import MediaCard from "./MediaCard";
+import TrackRow from "./TrackRow";
 
 function AlbumList() {
   const [albumList, setAlbumList] = useState([]);
@@ -71,21 +72,17 @@ function AlbumList() {
 
   return (
     <>
-      <div className="d-flex flex-row justify-content-between gap-2">
-        <div className="mt-2 rounded bg-dark flex-grow-1 w-50">
-          <div
-            className="overflow-auto rounded p-2"
-            style={{ maxHeight: "65vh" }}   
-          >
+      <div className={`content-split ${selectedAlbum ? "" : "content-split--single"}`}>
+        <div className="content-panel">
+          <div className="content-scroll">
             <h1 className="fs-5 m-2">Albums</h1>
-            <div className="d-flex mt-3 flex-wrap justify-content-space-evenly">
+            <div className="media-grid">
               {albumList.length > 0 ? (
                 albumList
-                  .filter((album) => album.name.length <= 10)
                   .map((album) => (
-                    <div
+                    <MediaCard
                       key={album.id}
-                      className="card-body m-1 rounded text-light d-flex flex-column align-items-center bg-secondary p-1 w-15"
+                      image={album.images[0]?.url}
                       onClick={() =>
                         fetchAlbumTracks(
                           album.id,
@@ -93,16 +90,9 @@ function AlbumList() {
                           album.images[0]?.url
                         )
                       }
-                      style={{ cursor: "pointer" }}
-                    >
-                      <img
-                        className="rounded p-1 img-fluid artist-image"
-                        src={album.images[0]?.url}
-                        alt={album.name}
-                        width="150"
-                      />
-                      <h3 className="fs-6">{album.name}</h3>
-                    </div>
+                      subtitle={album.artists?.map((artist) => artist.name).join(", ")}
+                      title={album.name}
+                    />
                   ))
               ) : (
                 <p>No albums available</p>
@@ -113,36 +103,26 @@ function AlbumList() {
     
 
       {selectedAlbum && (
-        <div className="mt-2 p-1 bg-dark rounded flex-grow-2 w-50 p-2">
-          <div
-            className="overflow-auto rounded"
-            style={{ maxHeight: "65vh" }} // Ensures scrolling works
-          >
+        <div className="content-panel">
+          <div className="content-scroll">
             <div
-              className="d-flex position-relative rounded"
+              className="detail-hero"
               style={{
                 backgroundImage: `url(${selectedAlbum.image})`,
-                backgroundSize: "cover",
-                backgroundPosition: "center",
-                width: "100%",
-                height: "200px",
-                objectFit: "cover",
               }}
             >
-              <h3 className="text-light p-2">Top Tracks of {selectedAlbum.name}</h3>
+              <h3 className="detail-hero-title">Top Tracks of {selectedAlbum.name}</h3>
             </div>
-            <ul className="list-group mt-2">
+            <ul className="track-list">
               {albumTracks.length > 0 ? (
                 albumTracks.map((track) => (
-                  <li
+                  <TrackRow
                     key={track.id}
-                    className="list-group-item bg-dark bg-gradient text-light border-0 d-flex justify-content-between align-items-center"
-                  >
-                    <p className="m-2"> {track.name}</p>
-                    <div onClick={() => setCurrentTrack(track)}>
-                      <FaRegPlayCircle className="fs-4 fw-light" />
-                    </div>
-                  </li>
+                    image={selectedAlbum.image}
+                    onSelect={() => setCurrentTrack(track)}
+                    subtitle={track.artists?.map((artist) => artist.name).join(", ")}
+                    title={track.name}
+                  />
                 ))
               ) : (
                 <p>No top tracks available.</p>

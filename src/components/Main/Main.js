@@ -1,13 +1,16 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import BrowseAll from "./BrowseAll";
 import Navbar from "./Navbar";
+import "./BrowseAll.css";
 
 function Main() {
+  const [searchQuery, setSearchQuery] = useState("");
+
   return (
-    <MainComponent className="p-2 rounded-3 bg-info">
-      <Navbar />
-      <BrowseAll />
+    <MainComponent className="app-main p-2 rounded-3">
+      <Navbar onSearch={setSearchQuery} searchQuery={searchQuery} />
+      <BrowseAll searchQuery={searchQuery} />
     </MainComponent>
   );
 }
@@ -21,4 +24,9 @@ const MainComponent = styled.div`
   display: flex;
   flex-direction: column; 
   overflow: hidden;
+
+  @media (max-width: 900px) {
+    min-height: 0;
+    flex: 1;
+  }
 `;

@@ -1,3 +1,97 @@
 /* .navbar_before {
   background-color: rgb(33 37 41);
 } */
+
+.app-navbar {
+  flex: 0 0 auto;
+}
+
+.app-navbar-inner,
+.app-navbar-search-group,
+.app-navbar-actions,
+.app-search-form {
+  display: flex;
+  align-items: center;
+}
+
+.app-navbar-inner {
+  gap: 16px;
+  justify-content: space-between;
+}
+
+.app-navbar-search-group {
+  min-width: 0;
+  flex: 1;
+  gap: 12px;
+}
+
+.app-home-link {
+  flex: 0 0 auto;
+  margin: 0;
+}
+
+.app-search-form {
+  min-width: 180px;
+  max-width: 520px;
+  flex: 1;
+}
+
+.app-search-input {
+  width: 100%;
+  height: 40px;
+}
+
+.app-search-button {
+  flex: 0 0 auto;
+}
+
+.app-navbar-actions {
+  flex: 0 0 auto;
+  gap: 16px;
+  color: #fff;
+}
+
+.app-profile-button {
+  width: 48px;
+  height: 48px;
+  cursor: pointer;
+}
+
+.app-profile-menu {
+  right: 0;
+  z-index: 10;
+  min-width: 120px;
+  margin-top: 8px;
+  border-radius: 8px;
+}
+
+@media (max-width: 900px) {
+  .app-navbar-inner {
+    gap: 10px;
+  }
+
+  .app-navbar-actions {
+    gap: 8px;
+  }
+}
+
+@media (max-width: 560px) {
+  .app-navbar-inner {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .app-navbar-search-group,
+  .app-search-form {
+    width: 100%;
+  }
+
+  .app-navbar-actions {
+    justify-content: flex-end;
+  }
+
+  .app-profile-button {
+    width: 42px;
+    height: 42px;
+  }
+}

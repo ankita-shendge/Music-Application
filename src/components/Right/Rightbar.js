@@ -8,8 +8,8 @@ function Rightbar() {
 
   return (
     <>
-      <div className="p-2 rounded-3 bg-info">
-        <div className="" style={{height: "105px"}} >
+      <div className="player-shell p-2 rounded-3 bg-info">
+        <div className="player-shell-inner">
           <TrackDetails track={currentTrack}  />
         </div>
       </div>

@@ -12,21 +12,19 @@ function Sidebar() {
   return (
     <>
       {isMobile && (
-        <div>
+        <div className="mobile-sidebar-toggle">
           <GiHamburgerMenu />
         </div>
       )} 
 
       {isDesktop && (
         <div
-          className="bg-info rounded-2"
-          style={{ width: "100%" }} // Set the width to 100% to fill the parent
+          className="sidebar-panel bg-info rounded-2"
         >
           <div className="d-flex flex-column rounded">
             <img
               src="./images/Spotify_Full_Logo_RGB_White.png"
-              className="rounded bg-dark w-99 m-2 p-5"
-              style={{ width: "200px" }}
+              className="sidebar-logo rounded bg-dark"
               alt="sportify_logo"
             />
             <SidebarLibrary />
