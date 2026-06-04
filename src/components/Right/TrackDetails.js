@@ -1,10 +1,10 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 
 import { FaPlayCircle, FaPauseCircle } from "react-icons/fa";
 import { BiSkipPrevious, BiSkipNext } from "react-icons/bi";
 import { IoIosShuffle } from "react-icons/io";
 import { TbRepeat } from "react-icons/tb";
-import { MdOutlineFullscreen } from "react-icons/md";
+import { MdFullscreenExit, MdOutlineFullscreen } from "react-icons/md";
 import { IoVolumeHighOutline } from "react-icons/io5";
 
 
@@ -12,8 +12,8 @@ import { IoVolumeHighOutline } from "react-icons/io5";
 let lastAutoPlayedTrackUri = "";
 
 const TrackDetails = ({ track }) => {
-  const playerRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
   const [playbackError, setPlaybackError] = useState("");
   const [volume, setVolume] = useState(50);
   const token = window.localStorage.getItem("access_token");
@@ -134,18 +134,16 @@ const TrackDetails = ({ track }) => {
     }
   }, [playTrack, track?.uri]);
 
-  const handleFullscreen = async () => {
-    try {
-      if (document.fullscreenElement) {
-        await document.exitFullscreen();
-        return;
-      }
+  useEffect(() => {
+    document.body.classList.toggle("player-fullscreen-open", isFullscreen);
 
-      await playerRef.current?.requestFullscreen();
-    } catch (error) {
-      console.error("Unable to toggle fullscreen:", error);
-      setPlaybackError("Fullscreen is not available in this browser.");
-    }
+    return () => {
+      document.body.classList.remove("player-fullscreen-open");
+    };
+  }, [isFullscreen]);
+
+  const handleFullscreen = () => {
+    setIsFullscreen((currentValue) => !currentValue);
   };
 
   const handleVolumeChange = async (event) => {
@@ -187,7 +185,7 @@ const TrackDetails = ({ track }) => {
   };
 
   return (
-<div className="track-player bg-dark text-light py-3" ref={playerRef}>
+<div className={`track-player bg-dark text-light py-3 ${isFullscreen ? "track-player--fullscreen" : ""}`}>
   <div className="container-fluid">
     <div className="track-player-grid align-items-center text-center">
       {/* <!-- Album Art and Track Info --> */}
@@ -246,12 +244,16 @@ const TrackDetails = ({ track }) => {
           />
         </label>
         <button
-          aria-label="Toggle fullscreen player"
+          aria-label={isFullscreen ? "Exit fullscreen player" : "Open fullscreen player"}
           className="track-player-fullscreen"
           onClick={handleFullscreen}
           type="button"
         >
-          <MdOutlineFullscreen className="fs-4 text-white" />
+          {isFullscreen ? (
+            <MdFullscreenExit className="fs-4 text-white" />
+          ) : (
+            <MdOutlineFullscreen className="fs-4 text-white" />
+          )}
         </button>
       </div>
     </div>
