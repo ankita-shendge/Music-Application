@@ -9,6 +9,8 @@ import { IoVolumeHighOutline } from "react-icons/io5";
 
 
 
+let lastAutoPlayedTrackUri = "";
+
 const TrackDetails = ({ track }) => {
   const playerRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -126,7 +128,8 @@ const TrackDetails = ({ track }) => {
   };
 
   useEffect(() => {
-    if (track?.uri) {
+    if (track?.uri && track.uri !== lastAutoPlayedTrackUri) {
+      lastAutoPlayedTrackUri = track.uri;
       playTrack(track.uri);
     }
   }, [playTrack, track?.uri]);
