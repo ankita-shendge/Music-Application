@@ -5,7 +5,7 @@ const CODE_VERIFIER_KEY = "spotify_code_verifier";
 const AUTH_STATE_KEY = "spotify_auth_state";
 
 export const clientId =
-  process.env.REACT_APP_SPOTIFY_CLIENT_ID || "65f331ac024346659850288cc526fb16";
+  process.env.REACT_APP_SPOTIFY_CLIENT_ID || "26a01ecfcb0e421995af48e901cfa1d0";
 
 export const redirectUri =
   process.env.REACT_APP_SPOTIFY_REDIRECT_URI ||
