@@ -49,10 +49,23 @@ a {
 }
 
 @media (max-width: 900px) {
+  .app-shell--compact {
+    min-height: 100dvh;
+    height: 100dvh;
+    overflow: hidden;
+  }
+
   .app-shell--compact > .app-main,
   .app-shell--compact > nav,
   .app-shell--compact > div {
     border-radius: 8px;
+  }
+
+  .app-shell--compact > .app-main {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
 }
 

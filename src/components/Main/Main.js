@@ -28,5 +28,7 @@ const MainComponent = styled.div`
   @media (max-width: 900px) {
     min-height: 0;
     flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
 `;

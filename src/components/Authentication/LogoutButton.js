@@ -30,7 +30,8 @@ const LogoutButton = styled.div`
     background: transparent;
     color: white;
     cursor: pointer;
-    padding: 8px 12px;
+    padding: 8px 10px;
+    font-size: 0.9rem;
     text-align: left;
   }
 
