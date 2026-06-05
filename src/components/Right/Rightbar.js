@@ -8,7 +8,7 @@ function Rightbar() {
 
   return (
     <>
-      <div className="player-shell p-2 rounded-3 bg-info">
+      <div className="player-shell">
         <div className="player-shell-inner">
           <TrackDetails track={currentTrack}  />
         </div>
