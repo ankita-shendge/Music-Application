@@ -1,22 +1,49 @@
-import React, { useState } from "react";
-import { getLoginUrl } from "./sportify";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import { getLoginUrl, redirectUri } from "./sportify";
 import "./Login.css";
 
 function Login() {
+  const hasStartedLogin = useRef(false);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleLogin = async () => {
+  const startSpotifyLogin = useCallback(async () => {
+    if (hasStartedLogin.current) {
+      return;
+    }
+
+    hasStartedLogin.current = true;
+
     try {
       setError("");
       setIsLoading(true);
       const loginUrl = await getLoginUrl();
       window.location.href = loginUrl;
     } catch (error) {
+      hasStartedLogin.current = false;
       setIsLoading(false);
       setError(error.message || "Unable to start Spotify login.");
     }
+  }, []);
+
+  const handleLogin = () => {
+    const configuredRedirectOrigin = new URL(redirectUri).origin;
+
+    if (window.location.origin !== configuredRedirectOrigin) {
+      window.location.href = `${configuredRedirectOrigin}/?start_spotify_login=true`;
+      return;
+    }
+
+    startSpotifyLogin();
   };
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+
+    if (params.get("start_spotify_login") === "true") {
+      startSpotifyLogin();
+    }
+  }, [startSpotifyLogin]);
 
   return (
     <div className="login">

@@ -12,6 +12,8 @@ export const redirectUri =
   `${window.location.origin}/callback`;
 
 const scopes = [
+  "user-read-email",
+  "user-read-private",
   "user-read-currently-playing",
   "user-read-recently-played",
   "user-read-playback-state",
