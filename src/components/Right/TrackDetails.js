@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 
 import { FaPlayCircle, FaPauseCircle } from "react-icons/fa";
 import { BiSkipPrevious, BiSkipNext } from "react-icons/bi";
@@ -12,12 +12,23 @@ import { IoVolumeHighOutline } from "react-icons/io5";
 let lastAutoPlayedTrackUri = "";
 
 const TrackDetails = ({ track }) => {
+  const isSeekingRef = useRef(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [playbackError, setPlaybackError] = useState("");
+  const [progressMs, setProgressMs] = useState(0);
+  const [durationMs, setDurationMs] = useState(0);
   const [volume, setVolume] = useState(50);
   const token = window.localStorage.getItem("access_token");
   const hasTrack = track && Object.keys(track).length > 0;
+
+  const formatTime = (milliseconds) => {
+    const totalSeconds = Math.max(0, Math.floor(milliseconds / 1000));
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = String(totalSeconds % 60).padStart(2, "0");
+
+    return `${minutes}:${seconds}`;
+  };
 
   const getPlaybackDeviceId = useCallback(async () => {
     const response = await fetch("https://api.spotify.com/v1/me/player/devices", {
@@ -135,6 +146,72 @@ const TrackDetails = ({ track }) => {
   }, [playTrack, track?.uri]);
 
   useEffect(() => {
+    setProgressMs(0);
+    setDurationMs(track?.duration_ms || 0);
+  }, [track?.duration_ms, track?.uri]);
+
+  useEffect(() => {
+    if (!token || !hasTrack) {
+      return undefined;
+    }
+
+    let isMounted = true;
+
+    const syncPlaybackState = async () => {
+      try {
+        const response = await fetch("https://api.spotify.com/v1/me/player", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!response.ok || response.status === 204) {
+          return;
+        }
+
+        const data = await response.json();
+
+        if (isMounted && data.item?.uri === track.uri) {
+          setIsPlaying(Boolean(data.is_playing));
+          setDurationMs(data.item.duration_ms || track.duration_ms || 0);
+
+          if (!isSeekingRef.current) {
+            setProgressMs(data.progress_ms || 0);
+          }
+        }
+      } catch (error) {
+        console.error("Error syncing playback progress:", error);
+      }
+    };
+
+    syncPlaybackState();
+    const syncInterval = window.setInterval(syncPlaybackState, 5000);
+
+    return () => {
+      isMounted = false;
+      window.clearInterval(syncInterval);
+    };
+  }, [hasTrack, token, track?.duration_ms, track?.uri]);
+
+  useEffect(() => {
+    if (!isPlaying || !durationMs) {
+      return undefined;
+    }
+
+    const progressInterval = window.setInterval(() => {
+      if (!isSeekingRef.current) {
+        setProgressMs((currentProgress) =>
+          Math.min(currentProgress + 1000, durationMs)
+        );
+      }
+    }, 1000);
+
+    return () => {
+      window.clearInterval(progressInterval);
+    };
+  }, [durationMs, isPlaying]);
+
+  useEffect(() => {
     document.body.classList.toggle("player-fullscreen-open", isFullscreen);
 
     return () => {
@@ -181,6 +258,39 @@ const TrackDetails = ({ track }) => {
     } catch (error) {
       console.error("Error updating volume:", error);
       setPlaybackError(error.message || "Spotify volume update failed. Please try again.");
+    }
+  };
+
+  const handleProgressChange = (event) => {
+    isSeekingRef.current = true;
+    setProgressMs(Number(event.target.value));
+  };
+
+  const seekTrack = async () => {
+    if (!token || !hasTrack) {
+      isSeekingRef.current = false;
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `https://api.spotify.com/v1/me/player/seek?position_ms=${Math.round(progressMs)}`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.status !== 204 && response.status !== 200) {
+        setPlaybackError("Spotify could not update the song position.");
+      }
+    } catch (error) {
+      console.error("Error seeking track:", error);
+      setPlaybackError("Spotify could not update the song position.");
+    } finally {
+      isSeekingRef.current = false;
     }
   };
 
@@ -256,6 +366,22 @@ const TrackDetails = ({ track }) => {
           )}
         </button>
       </div>
+    </div>
+    <div className="track-player-progress">
+      <span>{formatTime(progressMs)}</span>
+      <input
+        aria-label="Song progress"
+        disabled={!hasTrack || !durationMs}
+        max={durationMs || 0}
+        min="0"
+        onBlur={seekTrack}
+        onChange={handleProgressChange}
+        onKeyUp={seekTrack}
+        onPointerUp={seekTrack}
+        type="range"
+        value={Math.min(progressMs, durationMs || 0)}
+      />
+      <span>{formatTime(durationMs)}</span>
     </div>
     {playbackError ? <p className="track-player-error">{playbackError}</p> : null}
   </div>
