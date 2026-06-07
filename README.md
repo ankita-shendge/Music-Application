@@ -1,70 +1,186 @@
-# Getting Started with Create React App
+# Music Application
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A responsive Spotify-powered music application built with React. Users can sign
+in with Spotify, browse music, search for tracks, view their top tracks, and
+control playback from a custom player.
+
+## Features
+
+- Spotify login using Authorization Code Flow with PKCE
+- Browse trending, English, Bollywood, and Spanish tracks
+- View top tracks, artists, albums, and audiobooks
+- Search Spotify tracks
+- Responsive desktop, tablet, and mobile layouts
+- Play and pause Spotify playback
+- Volume control
+- Playback progress bar with seeking
+- Fullscreen player with large album artwork
+- Spotify profile menu and logout
+
+## Tech Stack
+
+- React 18
+- Spotify Web API
+- React Router
+- React Icons
+- Bootstrap
+- Styled Components
+- React Split
+- Vercel
+
+## Requirements
+
+- Node.js and npm
+- A Spotify account
+- A Spotify Developer application
+- Spotify Premium for playback controls such as play, pause, seek, and volume
+
+When the Spotify application is in Development Mode, users must be added to the
+app's allowlist in the Spotify Developer Dashboard before they can sign in.
+
+## Spotify Setup
+
+1. Open the [Spotify Developer Dashboard](https://developer.spotify.com/dashboard).
+2. Create an app or open an existing app.
+3. Copy the app's Client ID.
+4. Add the redirect URI used by the application.
+
+For local development:
+
+```text
+http://127.0.0.1:3000/callback
+```
+
+For production:
+
+```text
+https://your-production-domain.vercel.app/callback
+```
+
+The redirect URI must exactly match the value configured in the application.
+The protocol, domain, port, path, and trailing slash all matter.
+
+This project uses PKCE, so a Spotify Client Secret is not required and should
+never be added to the frontend.
+
+## Environment Variables
+
+Create a `.env.local` file in the project root:
+
+```env
+REACT_APP_SPOTIFY_CLIENT_ID=your_spotify_client_id
+REACT_APP_SPOTIFY_REDIRECT_URI=http://127.0.0.1:3000/callback
+```
+
+Environment files such as `.env.local` are ignored by git.
+
+## Installation
+
+```bash
+git clone https://github.com/ankita-shendge/Music-Application.git
+cd Music-Application
+npm install
+```
+
+Start the development server:
+
+```bash
+npm start
+```
+
+Open:
+
+```text
+http://127.0.0.1:3000
+```
+
+## Production Build
+
+```bash
+npm run build
+```
+
+The optimized production build is created in the `build` directory.
+
+## Vercel Deployment
+
+Add these environment variables in the Vercel project settings:
+
+```text
+REACT_APP_SPOTIFY_CLIENT_ID
+REACT_APP_SPOTIFY_REDIRECT_URI
+```
+
+Use the stable production domain for `REACT_APP_SPOTIFY_REDIRECT_URI`:
+
+```text
+https://your-production-domain.vercel.app/callback
+```
+
+Add the same URI to the Spotify Developer Dashboard, then redeploy the project.
+Avoid using changing Vercel preview URLs for Spotify login.
+
+The included `vercel.json` rewrites application routes to `index.html`, allowing
+Spotify's `/callback` redirect to load the React application.
 
 ## Available Scripts
 
-In the project directory, you can run:
+```bash
+npm start
+```
 
-### `npm start`
+Runs the application in development mode.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+```bash
+npm run build
+```
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+Creates an optimized production build.
 
-### `npm test`
+```bash
+npm test
+```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Runs the test runner in watch mode.
 
-### `npm run build`
+## Project Structure
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+```text
+src/
+  components/
+    Authentication/   Spotify login, PKCE, and logout
+    Main/             Browse, search, navigation, and track lists
+    Right/            Music player
+    Sidebar/          Sidebar components
+    TrackContext.js   Selected-track state
+  utils/              Session cache utilities
+  App.js              Authentication and responsive application layout
+  App.css             Application and player styles
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## Troubleshooting
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### `redirect_uri: Not matching configuration`
 
-### `npm run eject`
+Confirm that `REACT_APP_SPOTIFY_REDIRECT_URI` exactly matches a Redirect URI in
+the Spotify Developer Dashboard.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+### `client_id: Invalid`
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+Confirm that `REACT_APP_SPOTIFY_CLIENT_ID` contains the Client ID from the same
+Spotify application where the redirect URI was configured.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+### Playback controls do not work
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+Spotify playback controls require Spotify Premium and an active Spotify device.
+Open Spotify on a device before attempting playback.
 
-## Learn More
+### Login works only after a second attempt
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+Start login from the same stable domain that Spotify redirects back to. PKCE
+login data is stored per browser origin and cannot be shared between changing
+Vercel preview domains and the production domain.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## Author
 
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Built by [Ankita Shendge](https://github.com/ankita-shendge).
